@@ -2,9 +2,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-void randomNumbers();
-int printArray();
-
 typedef struct card {
     /* Id do jogador, lista com 9 números aleatórios não repetidos */
     int idPlayer;
@@ -12,8 +9,13 @@ typedef struct card {
 } CARD;
 
 typedef struct ranking {
-    CARD classification[30];
+    int idPlayer;
+    int remNumbers;
 } RANKING;
+
+void randomNumbers();
+int printArray();
+RANKING ranking;
 
 int randomNewPlayer() {
     return rand() & 1;
@@ -50,7 +52,7 @@ void randomNumbers(int array[], int player) {
             i++;
         }
     }
-    printArray(array, player);
+    /*printArray(array, player);*/
 }
 
 int printArray(int array[], int player) {
@@ -65,11 +67,29 @@ int printArray(int array[], int player) {
 }
 
 RANKING *rankingHits() {
+    int i = 0;
+    int j = 0;
+    
+    while(i < 30) {
+        while(j < 9) {
+            j++;
+        }
+        i++;
+    }
     return NULL;
 }
 
 int drawNumber() {
+    //Verifica se há ganhador
+    if (false) {
+        return 1;
+    }
+    
     return 0; // 0 - sorteia; 1-fim de jogo
+}
+
+int winner() {
+    for 
 }
 
 int main() {
@@ -79,6 +99,7 @@ int main() {
     while (countPlayers <= beginPlayers) {
         countPlayers++;
         c = buildCard(countPlayers);
+        ranking.classification[countPlayers - 1] = c->playerId;
     }
 
     while (newDraw == 0) {
@@ -86,6 +107,7 @@ int main() {
         if (randomNewPlayer() == 1 && countPlayers < 30){
             countPlayers++;
             c = buildCard(countPlayers);
+            ranking.classification[countPlayers - 1] = *c;
         }
     }
 }
