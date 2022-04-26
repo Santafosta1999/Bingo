@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-int randomNumbers();
+void randomNumbers();
 int printArray();
 
 typedef struct card {
@@ -32,14 +32,14 @@ CARD *buildCard(int playerId) {
     return c;
 }
 
-int randomNumbers(int array[], int player) {
+void randomNumbers(int array[], int player) {
     int i = 0;
-    int j = 0;
-    int num = 0;
+    int num;
     while(i < 9) {
+        int j = 0;
         num = rand()%100;
-        while (j < i) {
-            if (j == 10 || (int)array[j] == num) {               
+        while (j < 10) {
+            if (j == 10 || (int)array[j] == num) {            
                 break;
             } else {
                 j++;
@@ -51,12 +51,11 @@ int randomNumbers(int array[], int player) {
         }
     }
     printArray(array, player);
-    return 0;
 }
 
 int printArray(int array[], int player) {
     int i = 0;
-    printf("PLAYER %i\n\n", player);
+    printf("\n\nPLAYER %i\n\n", player);
     while (i < 9)
     {
         printf("Pos %i - %i\n", i, (int)array[i]);
@@ -74,16 +73,19 @@ int drawNumber() {
 }
 
 int main() {
-    /*CARD *c = NULL;*/
+    CARD *c;
+    
     int newDraw = 0, countPlayers = 0, beginPlayers = randomStartPlayer();
     while (countPlayers <= beginPlayers) {
-        buildCard(countPlayers++);
+        countPlayers++;
+        c = buildCard(countPlayers);
     }
 
     while (newDraw == 0) {
         newDraw = drawNumber();
         if (randomNewPlayer() == 1 && countPlayers < 30){
-            buildCard(countPlayers++);
+            countPlayers++;
+            c = buildCard(countPlayers);
         }
     }
 }
