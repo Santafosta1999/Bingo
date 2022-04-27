@@ -9,8 +9,7 @@ typedef struct card {
 } CARD;
 
 typedef struct ranking {
-    int idPlayer;
-    int remHits;
+    int classification[30][2];
 } RANKING;
 
 void randomNumbers();
@@ -18,6 +17,7 @@ int printArray();
 
 int countDraw = 0;
 int drawNumbers[100];
+int countPlayers = 0;
 CARD listPlayers[30];
 RANKING ranking;
 
@@ -64,7 +64,6 @@ void randomNumbers(int array[], int player) {
             i++;
         }
     }
-    //printArray(array, player);
 }
 
 int printArray(int array[], int player) {
@@ -92,37 +91,48 @@ RANKING *rankingHits() {
 }
 
 int winner(int lastDraw) {
-    /*num = rand()%100;
-    while (j < 10) {
-        if (j == 10 || (int)array[j] == num) {            
-            break;
-        } else {
-            j++;
-        }           
-    }*/
-    if (lastDraw == 50) {
-        return 1;   
-    } else {
-        return 0;
+    int i = 0;   
+    while (i < countPlayers) {
+        int j = 0;
+        while (j < 9) {
+            if (listPlayers[i].numbers[j] == lastDraw) {    
+                printf("Jogador: %i\nNumero: %i\nSorteio: %i\n",listPlayers[i].idPlayer, listPlayers[i].numbers[j], lastDraw);            
+                ranking.classification[i][1]--; 
+                printf("Numeros Restantes: %i\n\n", ranking.classification[i][1]);
+                break;
+            }
+            j++;       
+        }
+        if (ranking.classification[i][1] == 0) {
+            printf("Ganhador: JOGADOR %i\n\n", listPlayers[i].idPlayer);
+            printf("Numeros:\n");
+            int k = 0;
+            while (k < 9) {
+                printf("Pos %i: %i\n", k, listPlayers[i].numbers[k]);
+                k++;
+            }
+            return 1;
+        }
+        i++;       
     }
+    return 0;
 }
 
 int drawNumber() {
     //Sorteia
     int i = 0;
     int num = randomNum();
-    if (countDraw < 100) {
+    if (countDraw != 0 && countDraw < 100) {
         while (i < countDraw) {
             if ((int)drawNumbers[i] == num) {
-                i = 0;            
+                i = -1;            
                 break;
             } else {
                 i++;
             }           
-        }   
+        }     
     }
-    if (i != 0) {
-        printf("Num: %i\n", num);
+    if (i != -1) {
         drawNumbers[countDraw] = num;
         countDraw++;
     }
@@ -132,12 +142,13 @@ int drawNumber() {
 int main() {
     CARD *c;
     
-    int newDraw = 0, countPlayers = 0, beginPlayers = randomStartPlayer();
+    int newDraw = 0, beginPlayers = randomStartPlayer();
     while (countPlayers <= beginPlayers) {
         countPlayers++;
         c = buildCard(countPlayers);
         listPlayers[countPlayers - 1] = *c;
-        ranking.idPlayer = 0;
+        ranking.classification[countPlayers - 1][0] = countPlayers; 
+        ranking.classification[countPlayers - 1][1] = 9;
     }
 
     while (newDraw == 0) {
@@ -146,7 +157,8 @@ int main() {
             countPlayers++;
             c = buildCard(countPlayers);
             listPlayers[countPlayers - 1] = *c;
-            ranking.idPlayer = 0;
+            ranking.classification[countPlayers - 1][0] = countPlayers; 
+            ranking.classification[countPlayers - 1][1] = 9;
         }
     }
 }
