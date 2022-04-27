@@ -10,11 +10,15 @@ typedef struct card {
 
 typedef struct ranking {
     int idPlayer;
-    int remNumbers;
+    int remHits;
 } RANKING;
 
 void randomNumbers();
 int printArray();
+
+int countDraw = 0;
+int drawNumbers[100];
+CARD listPlayers[30];
 RANKING ranking;
 
 int randomNewPlayer() {
@@ -23,6 +27,14 @@ int randomNewPlayer() {
 
 int randomStartPlayer() {
     return rand()%30;
+}
+
+int randomNum() {
+    int num = 0;
+    while(num == 0) {
+        num = rand()%100;
+    }
+    return num;
 }
 
 CARD *buildCard(int playerId) {
@@ -39,7 +51,7 @@ void randomNumbers(int array[], int player) {
     int num;
     while(i < 9) {
         int j = 0;
-        num = rand()%100;
+        num = randomNum();
         while (j < 10) {
             if (j == 10 || (int)array[j] == num) {            
                 break;
@@ -47,12 +59,12 @@ void randomNumbers(int array[], int player) {
                 j++;
             }           
         }
-        if (j == 10 && num != 0) {
+        if (j == 10) {
             array[i] = num;
             i++;
         }
     }
-    /*printArray(array, player);*/
+    //printArray(array, player);
 }
 
 int printArray(int array[], int player) {
@@ -79,17 +91,42 @@ RANKING *rankingHits() {
     return NULL;
 }
 
-int drawNumber() {
-    //Verifica se há ganhador
-    if (false) {
-        return 1;
+int winner(int lastDraw) {
+    /*num = rand()%100;
+    while (j < 10) {
+        if (j == 10 || (int)array[j] == num) {            
+            break;
+        } else {
+            j++;
+        }           
+    }*/
+    if (lastDraw == 50) {
+        return 1;   
+    } else {
+        return 0;
     }
-    
-    return 0; // 0 - sorteia; 1-fim de jogo
 }
 
-int winner() {
-    for 
+int drawNumber() {
+    //Sorteia
+    int i = 0;
+    int num = randomNum();
+    if (countDraw < 100) {
+        while (i < countDraw) {
+            if ((int)drawNumbers[i] == num) {
+                i = 0;            
+                break;
+            } else {
+                i++;
+            }           
+        }   
+    }
+    if (i != 0) {
+        printf("Num: %i\n", num);
+        drawNumbers[countDraw] = num;
+        countDraw++;
+    }
+    return winner(num); // 0 - sorteia; 1-fim de jogo
 }
 
 int main() {
@@ -99,7 +136,8 @@ int main() {
     while (countPlayers <= beginPlayers) {
         countPlayers++;
         c = buildCard(countPlayers);
-        ranking.classification[countPlayers - 1] = c->playerId;
+        listPlayers[countPlayers - 1] = *c;
+        ranking.idPlayer = 0;
     }
 
     while (newDraw == 0) {
@@ -107,7 +145,8 @@ int main() {
         if (randomNewPlayer() == 1 && countPlayers < 30){
             countPlayers++;
             c = buildCard(countPlayers);
-            ranking.classification[countPlayers - 1] = *c;
+            listPlayers[countPlayers - 1] = *c;
+            ranking.idPlayer = 0;
         }
     }
 }
