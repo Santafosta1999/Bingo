@@ -48,8 +48,7 @@ CARD *buildCard(int playerId) {
 }
 
 void randomNumbers(int array[], int player) {
-    int i = 0;
-    int num;
+    int i = 0, num;
     while(i < 9) {
         int j = 0;
         num = randomNum();
@@ -125,8 +124,7 @@ void writeRanking(RANKING *ranking) {
 }
 
 int winner(int lastDraw) {
-    int ret = 0;
-    int i = 0;   
+    int ret = 0, i = 0;   
     while (i < countPlayers) {
         int j = 0;
         while (j < 9) {
@@ -170,27 +168,29 @@ int drawNumber() {
     return winner(num); // 0 - sorteia; 1-fim de jogo
 }
 
+void addPlayer(CARD *c) {
+    countPlayers++;
+    c = buildCard(countPlayers);
+    listPlayers[countPlayers - 1] = *c;
+    ranking.classification[countPlayers - 1][0] = countPlayers; 
+    ranking.classification[countPlayers - 1][1] = 9;
+}
+
 int main() {
     CARD *c;
+    c = malloc(sizeof(CARD));
+
     srand(time(NULL));
     
     int newDraw = 0, beginPlayers = randomStartPlayer();
     while (countPlayers <= beginPlayers) {
-        countPlayers++;
-        c = buildCard(countPlayers);
-        listPlayers[countPlayers - 1] = *c;
-        ranking.classification[countPlayers - 1][0] = countPlayers; 
-        ranking.classification[countPlayers - 1][1] = 9;
+        addPlayer(c);
     }
 
     while (newDraw == 0) {
         newDraw = drawNumber();
         if (randomNewPlayer() == 1 && countPlayers < 30){
-            countPlayers++;
-            c = buildCard(countPlayers);
-            listPlayers[countPlayers - 1] = *c;
-            ranking.classification[countPlayers - 1][0] = countPlayers; 
-            ranking.classification[countPlayers - 1][1] = 9;
+            addPlayer(c);
         }
     }
 }
