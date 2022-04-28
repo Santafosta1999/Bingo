@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include <time.h>
+#include <Windows.h>
 
 typedef struct card {
     /* Id do jogador, lista com 9 números aleatórios não repetidos */
@@ -78,44 +79,73 @@ int printArray(int array[], int player) {
 }
 
 RANKING *rankingHits() {
-    int i = 0;
-    int j = 0;
-    
-    while(i < 30) {
-        while(j < 9) {
-            j++;
+    int i, j, min, id, num;
+    for (i = 0; i < (countPlayers - 1); i++) {
+        min = i;
+        for (j = i + 1; j < countPlayers; j++) {
+            if ((int)ranking.classification[j][1] < (int)ranking.classification[min][1]) {
+                min = j;
+            }
         }
+        if (i != min)
+        {
+            id = (int)ranking.classification[i][0];
+            num = (int)ranking.classification[i][1];
+            ranking.classification[i][0] = (int)ranking.classification[min][0];
+            ranking.classification[i][1] = (int)ranking.classification[min][1];
+            ranking.classification[min][0] = id;
+            ranking.classification[min][1] = num;
+        }
+    }
+    return &ranking;
+}
+
+void writeRanking(RANKING *ranking) {
+    int i = 0;
+    printf("*-----------------------------*\n");
+    printf("| POSICAO | JOGADOR | ACERTOS |\n");
+    printf("|-----------------------------|\n");
+    while(i < countPlayers) {
+        printf("|    %2i   |    %2i   |    %2i   |\n", i + 1, ranking->classification[i][0], 9 - (int)ranking->classification[i][1]);
         i++;
     }
-    return NULL;
+    printf("*-----------------------------*\n\n\n");
+
+    if((int)ranking->classification[0][1] == 0) {
+        printf("Vencedor(es):\n");
+        i = 0;
+        while(i < countPlayers) {
+            if((int)ranking->classification[i][1] == 0) {
+                printf("JOGADOR %i!\n", (int)ranking->classification[i][0]);
+            }
+            i++;
+        }
+    }
+    
 }
 
 int winner(int lastDraw) {
+    int ret = 0;
     int i = 0;   
     while (i < countPlayers) {
         int j = 0;
         while (j < 9) {
-            if (listPlayers[i].numbers[j] == lastDraw) {    
-                printf("Jogador: %i\nNumero: %i\nSorteio: %i\n",listPlayers[i].idPlayer, listPlayers[i].numbers[j], lastDraw);            
+            if (listPlayers[i].numbers[j] == lastDraw) {              
                 ranking.classification[i][1]--; 
-                printf("Numeros Restantes: %i\n\n", ranking.classification[i][1]);
                 break;
             }
             j++;       
         }
         if (ranking.classification[i][1] == 0) {
-            printf("Ganhador: JOGADOR %i\n\n", listPlayers[i].idPlayer);
-            printf("Numeros:\n");
-            int k = 0;
-            while (k < 9) {
-                printf("Pos %i: %i\n", k, listPlayers[i].numbers[k]);
-                k++;
-            }
-            return 1;
+            ret = 1;
         }
         i++;       
     }
-    return 0;
+
+    printf("Rodada %i - Numero Sorteado: %i\n", countDraw, lastDraw);
+    writeRanking(rankingHits());
+
+    return ret;
 }
 
 int drawNumber() {
@@ -136,11 +166,13 @@ int drawNumber() {
         drawNumbers[countDraw] = num;
         countDraw++;
     }
+    Sleep(1000);
     return winner(num); // 0 - sorteia; 1-fim de jogo
 }
 
 int main() {
     CARD *c;
+    srand(time(NULL));
     
     int newDraw = 0, beginPlayers = randomStartPlayer();
     while (countPlayers <= beginPlayers) {
