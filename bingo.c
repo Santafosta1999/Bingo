@@ -101,8 +101,7 @@ RANKING *rankingHits() {
                 min = j;
             }
         }
-        if (i != min)
-        {
+        if (i != min) {
             id = (int)ranking.classification[i][0];
             num = (int)ranking.classification[i][1];
             ranking.classification[i][0] = (int)ranking.classification[min][0];
@@ -136,8 +135,7 @@ void writeRanking(RANKING *ranking) {
             }
             i++;
         }
-    }
-    
+    }    
 }
 
 int winner(int lastDraw) {
